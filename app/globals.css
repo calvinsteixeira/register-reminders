@@ -73,4 +73,8 @@
   body {
     @apply bg-background text-foreground m-0 p-0 box-border;
   }
+
+  main {
+    @apply px-6
+  }
 }

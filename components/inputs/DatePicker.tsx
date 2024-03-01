@@ -31,7 +31,12 @@ const FormSchema = z.object({
   }),
 })
 
-export default function SelectDateReminder() {
+type Props = {
+  label?: string,
+  placeholder?: string
+}
+
+export default function DatePicker({label, placeholder}: Props) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
@@ -48,7 +53,7 @@ export default function SelectDateReminder() {
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel className="mb-2">Filtrar lembretes pela data</FormLabel>
+              <FormLabel className="mb-2">{label}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -62,7 +67,7 @@ export default function SelectDateReminder() {
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Selecione uma data</span>
+                        <span>{placeholder || "Selecione uma data"}</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -88,7 +93,7 @@ export default function SelectDateReminder() {
             </FormItem>
           )}
         />
-        <Button className='bg-secondary' type="submit">Buscar</Button>
+        {/* <Button className='bg-secondary' type="submit">Buscar</Button> */}
       </form>
     </Form>
   )

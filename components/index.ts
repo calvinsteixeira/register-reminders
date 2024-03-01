@@ -1,4 +1,4 @@
 import AnimatedWrapper from "./animations/AnimatedWrapper";
-import SelectDateReminder from "./forms/SelectDateReminder"
+import DatePicker from "./inputs/DatePicker"
 
-export { AnimatedWrapper, SelectDateReminder }
+export { AnimatedWrapper, DatePicker }

@@ -65,7 +65,7 @@ export default function DatePicker({label, placeholder}: Props) {
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        format(field.value, "PPP", { locale: ptBR })
                       ) : (
                         <span>{placeholder || "Selecione uma data"}</span>
                       )}
@@ -93,7 +93,7 @@ export default function DatePicker({label, placeholder}: Props) {
             </FormItem>
           )}
         />
-        {/* <Button className='bg-secondary' type="submit">Buscar</Button> */}
+        {/* <Button className='bg-secondary text-secondary-foreground' type="submit">Buscar</Button> */}
       </form>
     </Form>
   )

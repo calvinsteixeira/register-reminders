@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { ReactElement } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,40 +17,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { MdEdit, MdDelete } from "react-icons/md";
+type Props = {
+  title: string,
+  subtitle?: string,
+  description: string,
+  tags?: ReactElement
+}
 
-export default function ContentCard() {
+export default function ContentCard({ title, subtitle, description, tags }: Props) {
   return (
-    <Card className="max-w-[100%]">
+    <Card className="max-w-[100%] bg-card text-card-foreground shadow-xl border">
       <CardHeader>
-        <CardTitle>Create project</CardTitle>
-        <CardDescription>Deploy your new project in one-click.</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        {subtitle && <CardDescription>{subtitle}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <form>
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="framework">Framework</Label>
-              <Select>
-                <SelectTrigger id="framework">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="next">Next.js</SelectItem>
-                  <SelectItem value="sveltekit">SvelteKit</SelectItem>
-                  <SelectItem value="astro">Astro</SelectItem>
-                  <SelectItem value="nuxt">Nuxt.js</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </form>
+        <p>{description}</p>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
+      <CardFooter className="flex  justify-start gap-2">
+        <Button size={"icon"} className='bg-destructive text-destructive-foreground'><MdDelete className='text-base' /></Button>
+        <Button size={"icon"} className='bg-secondary'><MdEdit className='text-base' /></Button>
       </CardFooter>
     </Card>
   )

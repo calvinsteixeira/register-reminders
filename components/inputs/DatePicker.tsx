@@ -6,7 +6,6 @@ import { CalendarIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { ptBR } from "date-fns/locale"
-import { GlobalContext } from "@/context/GlobalContext"
 import React from "react"
 
 import { cn } from "@/lib/utils"
@@ -38,9 +37,7 @@ type Props = {
   placeholder?: string
 }
 
-export default function DatePicker({label, placeholder}: Props) {
-  const { data, setData } = React.useContext(GlobalContext)
-  
+export default function DatePicker({label, placeholder}: Props) {  
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })

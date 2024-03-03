@@ -41,7 +41,6 @@ export default function ConfirmationDialog({
               className="bg-primay"
               variant={"outline"}
               size={"sm"}
-              type="submit"
             >
               Cancelar
             </Button>

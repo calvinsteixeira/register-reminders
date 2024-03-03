@@ -1,20 +1,39 @@
 "use client";
 
 import React from "react";
-import { DatePicker, Divider, ContentCard } from "@/components/index";
+import {
+  DatePicker,
+  Divider,
+  ReminderCard,
+  ConfirmationDialog,
+} from "@/components/index";
+import { IDialog } from "@/components/content/ConfirmationDialog";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
 type Props = {};
+const dialogDefaultValues: IDialog = {
+  title: '',
+  description: '',
+  open: false,
+  onOpenChange(open) {},
+};
 
 export default function page({}: Props) {
   const [loadingFilterRequest, setLoadingFiltarRequest] =
     React.useState<boolean>(false);
+  const [dialogSettings, setDialogSettings] = React.useState<IDialog>(dialogDefaultValues)
 
   return (
     <main className="w-screen h-screen background">
+      <ConfirmationDialog open={dialogSettings.open} onOpenChange={() => {
+        setDialogSettings((prevState) => ({
+          ...prevState,
+          open: !dialogSettings.open
+        }))
+      }}  title={dialogSettings.title} description={dialogSettings.description}/>
       <h1 className="text-lg font-bold text-secondary mt-12">
         Register Reminder
       </h1>
@@ -47,10 +66,19 @@ export default function page({}: Props) {
               <p className="text-xs">31/01/2024</p>
             </div>
           </div>
-          <ContentCard
+          <ReminderCard
             title="Faculdade"
             subtitle="Documentos pendentes"
             description="Pedir para a escola os documentos necessário para efetivar minha matrícula"
+            // primaryAction={}
+            secondaryAction={() => {
+              setDialogSettings((prevState) => ({
+                ...prevState,
+                title:'Confirmar exclusão',
+                description:'Essa ação não poderá ser revertida, deseja continuar?',
+                open: true
+              }))             
+            }}
           />
         </div>
       </div>

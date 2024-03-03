@@ -23,9 +23,10 @@ type Props = {
   subtitle?: string,
   description: string,
   tags?: ReactElement
+  secondaryAction: () => void
 }
 
-export default function ContentCard({ title, subtitle, description, tags }: Props) {
+export default function ReminderCard({ title, subtitle, description, tags, secondaryAction }: Props) {
   return (
     <Card className="max-w-[100%] bg-card text-card-foreground shadow-xl border">
       <CardHeader>
@@ -36,7 +37,7 @@ export default function ContentCard({ title, subtitle, description, tags }: Prop
         <p>{description}</p>
       </CardContent>
       <CardFooter className="flex  justify-start gap-2">
-        <Button size={"icon"} className='bg-destructive text-destructive-foreground'><MdDelete className='text-base' /></Button>
+        <Button onClick={secondaryAction} size={"icon"} className='bg-destructive text-destructive-foreground'><MdDelete className='text-base' /></Button>
         <Button size={"icon"} className='bg-secondary'><MdEdit className='text-base' /></Button>
       </CardFooter>
     </Card>

@@ -1,6 +1,7 @@
 import AnimatedWrapper from "./animations/AnimatedWrapper";
 import DatePicker from "./inputs/DatePicker"
 import Divider from "./structure/Divider";
-import ContentCard from "./content/ContentCard";
+import ReminderCard from "./content/ReminderCard";
+import ConfirmationDialog from "./content/ConfirmationDialog"
 
-export { AnimatedWrapper, DatePicker, Divider, ContentCard }
+export { AnimatedWrapper, DatePicker, Divider, ReminderCard, ConfirmationDialog }

@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
+import { SelectSingleEventHandler } from "react-day-picker";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 type Props = {};
 const dialogDefaultValues: IDialog = {
@@ -25,6 +28,11 @@ export default function page({}: Props) {
   const [loadingFilterRequest, setLoadingFiltarRequest] =
     React.useState<boolean>(false);
   const [dialogSettings, setDialogSettings] = React.useState<IDialog>(dialogDefaultValues)
+  const [dateFilter, setDateFilter] = React.useState<Date>(new Date)
+
+  const handleSelectDate: SelectSingleEventHandler = (event, day) => {
+    if(day) setDateFilter(day)
+  }
 
   return (
     <main className="w-screen h-screen background">
@@ -43,7 +51,7 @@ export default function page({}: Props) {
             Selecione uma data para filtrar
           </span>
           <div className="flex gap-2">
-            <DatePicker />
+            <DatePicker selected={dateFilter} onSelect={handleSelectDate}/>
             <Button
               disabled={loadingFilterRequest}
               className="bg-secondary"
@@ -63,7 +71,7 @@ export default function page({}: Props) {
             <h2>Meus lembretes</h2>
             <div className="flex items-baseline gap-1">
               <CalendarIcon className="h-[0.85rem] w-[0.85rem]" />
-              <p className="text-xs">31/01/2024</p>
+              <p className="text-xs">{format(dateFilter, "dd/MM/yyyy", { locale: ptBR })}</p>
             </div>
           </div>
           <ReminderCard

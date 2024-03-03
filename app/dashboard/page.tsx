@@ -15,7 +15,6 @@ import { Loader2 } from "lucide-react";
 import { SelectSingleEventHandler } from "react-day-picker";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { getAllReminders } from "@/api/services/reminderService";
 
 type Props = {};
 const dialogDefaultValues: IDialog = {
@@ -34,10 +33,6 @@ export default function page({}: Props) {
   const handleSelectDate: SelectSingleEventHandler = (event, day) => {
     if(day) setDateFilter(day)
   }
-
-  React.useEffect(() => {
-    getAllReminders().then(res => console.log(res))
-  }, [])
 
   return (
     <main className="w-screen h-screen background">

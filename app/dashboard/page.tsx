@@ -15,39 +15,116 @@ import { Loader2 } from "lucide-react";
 import { SelectSingleEventHandler } from "react-day-picker";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { getAllReminders } from "@/api/services/reminderService";
+import reminderService from "@/api/remindersService";
+import { IReminder } from "@/api/remindersService";
+import { AxiosResponse } from "axios";
 
-type Props = {};
-const dialogDefaultValues: IDialog = {
-  title: '',
-  description: '',
-  open: false,
-  onOpenChange(open) {},
+type ReminderRequestSettings = {
+  data: IReminder[];
+  status: number | null;
+  loadingRequest: boolean;
 };
 
-export default function page({}: Props) {
-  const [loadingFilterRequest, setLoadingFiltarRequest] =
-    React.useState<boolean>(false);
-  const [dialogSettings, setDialogSettings] = React.useState<IDialog>(dialogDefaultValues)
-  const [dateFilter, setDateFilter] = React.useState<Date>(new Date)
+const reminderRequestSettingsDefaultValues: ReminderRequestSettings = {
+  data: [],
+  status: null,
+  loadingRequest: true,
+};
+const dialogDefaultValues: IDialog = {
+  title: "",
+  description: "",
+  open: false,
+  onOpenChange(open) { },
+};
+
+export default function page() {
+  const [reminderRequestSettings, setReminderRequestSettings] =
+    React.useState<ReminderRequestSettings>(
+      reminderRequestSettingsDefaultValues
+    );
+  const [selectedDateFilter, setSelectedDateFilter] = React.useState<Date>(
+    new Date()
+  );
+  const [dialogSettings, setDialogSettings] =
+    React.useState<IDialog>(dialogDefaultValues);
 
   const handleSelectDate: SelectSingleEventHandler = (event, day) => {
-    if(day) setDateFilter(day)
-  }
+    if (day) setSelectedDateFilter(day);
+  };
 
   React.useEffect(() => {
-    const reminders = getAllReminders()
-    console.log(reminders)
-  }, [])
+    setReminderRequestSettings((prevState) => ({
+      ...prevState,
+      loadingRequest: true,
+    }));
+
+    async function get() {
+      const result: AxiosResponse = await reminderService.getAllReminders();
+
+      setReminderRequestSettings({
+        data: result.data,
+        status: result.status,
+        loadingRequest: false,
+      });
+    }
+
+    setTimeout(() => {
+      get();
+    }, 2000)
+  }, []);
+
+  function handleContent(): React.ReactNode {
+    if (reminderRequestSettings.status || reminderRequestSettings.data.length == 0 && !reminderRequestSettings.loadingRequest) {
+      return (
+        <div className="w-full text-center mt-16">
+          <p>Não há dados</p>
+        </div>
+      )
+    } else if (reminderRequestSettings.loadingRequest) {
+      return (
+        <div className=" flex w-full h-full justify-center mt-16">
+          <div className='flex gap-2 items-center'>
+            <p className='text-sm'>Carregando os dados</p>
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </div>
+        </div>
+      )
+    } else if (reminderRequestSettings.data.length > 0) {
+      return (
+        reminderRequestSettings.data.map((reminder, index) => (
+          <ReminderCard
+            title={reminder.title}
+            subtitle={reminder.subtitle}
+            description={reminder.description}
+            // primaryAction={}
+            secondaryAction={() => {
+              setDialogSettings((prevState) => ({
+                ...prevState,
+                title: "Confirmar exclusão",
+                description:
+                  "Essa ação não poderá ser revertida, deseja continuar?",
+                open: true,
+              }));
+            }}
+          />
+        ))
+      )
+    }
+  }
 
   return (
     <main className="w-screen h-screen background">
-      <ConfirmationDialog open={dialogSettings.open} onOpenChange={() => {
-        setDialogSettings((prevState) => ({
-          ...prevState,
-          open: !dialogSettings.open
-        }))
-      }}  title={dialogSettings.title} description={dialogSettings.description}/>
+      <ConfirmationDialog
+        open={dialogSettings.open}
+        onOpenChange={() => {
+          setDialogSettings((prevState) => ({
+            ...prevState,
+            open: !dialogSettings.open,
+          }));
+        }}
+        title={dialogSettings.title}
+        description={dialogSettings.description}
+      />
       <h1 className="text-lg font-bold text-secondary mt-12">
         Register Reminder
       </h1>
@@ -57,13 +134,17 @@ export default function page({}: Props) {
             Selecione uma data para filtrar
           </span>
           <div className="flex gap-2">
-            <DatePicker selected={dateFilter} onSelect={handleSelectDate}/>
+            <DatePicker
+              selected={selectedDateFilter}
+              onSelect={handleSelectDate}
+              disabled={reminderRequestSettings.loadingRequest}
+            />
             <Button
-              disabled={loadingFilterRequest}
+              disabled={reminderRequestSettings.loadingRequest}
               className="bg-secondary"
               size={"icon"}
             >
-              {loadingFilterRequest ? (
+              {reminderRequestSettings.loadingRequest ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <FaSearch />
@@ -74,26 +155,9 @@ export default function page({}: Props) {
         </div>
         <div className="flex flex-col gap-4 mt-4">
           <div className="flex flex-col gap-0.5 text-secondary">
-            <h2>Meus lembretes</h2>
-            <div className="flex items-baseline gap-1">
-              <CalendarIcon className="h-[0.85rem] w-[0.85rem]" />
-              <p className="text-xs">{format(dateFilter, "dd/MM/yyyy", { locale: ptBR })}</p>
-            </div>
+            <h2>Meus lembretes</h2>            
           </div>
-          <ReminderCard
-            title="Faculdade"
-            subtitle="Documentos pendentes"
-            description="Pedir para a escola os documentos necessário para efetivar minha matrícula"
-            // primaryAction={}
-            secondaryAction={() => {
-              setDialogSettings((prevState) => ({
-                ...prevState,
-                title:'Confirmar exclusão',
-                description:'Essa ação não poderá ser revertida, deseja continuar?',
-                open: true
-              }))             
-            }}
-          />
+          {handleContent()}
         </div>
       </div>
     </main>

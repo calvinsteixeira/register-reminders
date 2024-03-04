@@ -18,16 +18,18 @@ import {
 type Props = {
   label?: string;
   selected: Date,
-  onSelect: SelectSingleEventHandler
+  onSelect: SelectSingleEventHandler,
+  disabled?: boolean
 };
 
-export default function DatePicker({ label, selected, onSelect }: Props) {
+export default function DatePicker({ label, selected, onSelect, disabled }: Props) {
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
+          disabled={disabled}
           className={cn(
             "w-[210px] justify-start text-left font-normal",
             !selected && "text-muted-foreground"

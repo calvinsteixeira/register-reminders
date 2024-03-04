@@ -1,3 +1,9 @@
 {
-  "reminders": []
+  "reminders": [{
+    "id": 0,
+    "title": "teste title",
+    "subtitle": "teste subtitle",
+    "description": "teste description",
+    "date": "23/04/1996"
+  }]
 }

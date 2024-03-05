@@ -20,6 +20,15 @@ const reminderService = {
       console.error(error)
       throw error;
     }
+  },
+  createReminder: async(data: IReminder): Promise<AxiosResponse> => {
+    try {
+      const result = await axios.post(API_URL + '/reminders', {data})
+      return result
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
   }
 }
 

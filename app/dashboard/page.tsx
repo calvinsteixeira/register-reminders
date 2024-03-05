@@ -74,10 +74,10 @@ export default function page() {
   }, []);
 
   function handleContent(): React.ReactNode {
-    if (reminderRequestSettings.status || reminderRequestSettings.data.length == 0 && !reminderRequestSettings.loadingRequest) {
+    if (!reminderRequestSettings.data || reminderRequestSettings.data.length == 0 && !reminderRequestSettings.loadingRequest) {
       return (
         <div className="w-full text-center mt-16">
-          <p>Não há dados</p>
+          <p className='text-sm'>Não há dados para a data informada.</p>
         </div>
       )
     } else if (reminderRequestSettings.loadingRequest) {

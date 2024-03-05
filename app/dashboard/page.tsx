@@ -9,7 +9,7 @@ import {
   ReminderDialog
 } from "@/components/index";
 import { IDialog } from "@/components/content/ConfirmationDialog";
-import { IReminderDialog } from "@/components/animations/forms/ReminderDialog";
+import { IReminderDialog } from "@/components/forms/ReminderDialog";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { IoMdAdd } from "react-icons/io"

@@ -6,10 +6,13 @@ import {
   Divider,
   ReminderCard,
   ConfirmationDialog,
+  ReminderDialog
 } from "@/components/index";
 import { IDialog } from "@/components/content/ConfirmationDialog";
+import { IReminderDialog } from "@/components/animations/forms/ReminderDialog";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
+import { IoMdAdd } from "react-icons/io"
 import { FaSearch } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 import { SelectSingleEventHandler } from "react-day-picker";
@@ -25,32 +28,44 @@ type ReminderRequestSettings = {
   loadingRequest: boolean;
 };
 
-const reminderRequestSettingsDefaultValues: ReminderRequestSettings = {
-  data: [],
-  status: null,
-  loadingRequest: true,
-};
-const dialogDefaultValues: IDialog = {
-  title: "",
-  description: "",
-  open: false,
-  onOpenChange(open) { },
-};
-
 export default function page() {
-  const [reminderRequestSettings, setReminderRequestSettings] =
-    React.useState<ReminderRequestSettings>(
-      reminderRequestSettingsDefaultValues
-    );
-  const [selectedDateFilter, setSelectedDateFilter] = React.useState<Date>(
-    new Date()
-  );
-  const [dialogSettings, setDialogSettings] =
-    React.useState<IDialog>(dialogDefaultValues);
+  const [reminderRequestSettings, setReminderRequestSettings] = React.useState<ReminderRequestSettings>({
+    data: [],
+    status: null,
+    loadingRequest: true
+  });
+  const [selectedDateFilter, setSelectedDateFilter] = React.useState<Date>(new Date());
+  const [deleteDialogSettings, setDeleteDialogSettings] = React.useState<IDialog>({
+    title: "",
+    description: "",
+    open: false,
+    onOpenChange() { }
+  });
+  const [reminderDialogSettings, setReminderDialogSettings] = React.useState<IReminderDialog>({    
+    open: false,
+    onOpenChange() { },
+  })
+  const [selectedReminder, setSelectedReminder] = React.useState<IReminder>()
 
   const handleSelectDate: SelectSingleEventHandler = (event, day) => {
     if (day) setSelectedDateFilter(day);
   };
+
+  async function getAllReminders() {
+    const result: AxiosResponse = await reminderService.getAllReminders();
+
+    setReminderRequestSettings({
+      data: result.data,
+      status: result.status,
+      loadingRequest: false,
+    });
+  }
+
+  async function createReminder(data: IReminder) {
+    const result: AxiosResponse = await reminderService.createReminder(data)
+
+    // TODO: Atualizar o estado conforme o retorno do create
+  }
 
   React.useEffect(() => {
     setReminderRequestSettings((prevState) => ({
@@ -58,18 +73,8 @@ export default function page() {
       loadingRequest: true,
     }));
 
-    async function get() {
-      const result: AxiosResponse = await reminderService.getAllReminders();
-
-      setReminderRequestSettings({
-        data: result.data,
-        status: result.status,
-        loadingRequest: false,
-      });
-    }
-
     setTimeout(() => {
-      get();
+      getAllReminders();
     }, 2000)
   }, []);
 
@@ -96,9 +101,15 @@ export default function page() {
             title={reminder.title}
             subtitle={reminder.subtitle}
             description={reminder.description}
-            // primaryAction={}
+            primaryAction={() => {
+              setReminderDialogSettings((prevStates) => ({
+                ...prevStates,
+                open: true,
+                reminderData: reminder
+              }))
+            }}
             secondaryAction={() => {
-              setDialogSettings((prevState) => ({
+              setDeleteDialogSettings((prevState) => ({
                 ...prevState,
                 title: "Confirmar exclusão",
                 description:
@@ -115,16 +126,22 @@ export default function page() {
   return (
     <main className="w-screen h-screen background">
       <ConfirmationDialog
-        open={dialogSettings.open}
+        open={deleteDialogSettings.open}
         onOpenChange={() => {
-          setDialogSettings((prevState) => ({
+          setDeleteDialogSettings((prevState) => ({
             ...prevState,
-            open: !dialogSettings.open,
+            open: !deleteDialogSettings.open,
           }));
         }}
-        title={dialogSettings.title}
-        description={dialogSettings.description}
+        title={deleteDialogSettings.title}
+        description={deleteDialogSettings.description}
       />
+      <ReminderDialog reminderData={reminderDialogSettings.reminderData} open={reminderDialogSettings.open} onOpenChange={() => {
+        setReminderDialogSettings((prevState) => ({
+          ...prevState,
+          open: !reminderDialogSettings.open,
+        }));
+      }} />
       <h1 className="text-lg font-bold text-secondary mt-12">
         Register Reminder
       </h1>
@@ -151,11 +168,19 @@ export default function page() {
               )}
             </Button>
           </div>
+          <Button onClick={() => {
+            setReminderDialogSettings((prevStates) => ({
+              ...prevStates,
+              open: !reminderDialogSettings.open
+            }))
+          }} variant={"ghost"} className='text-secondary gap-2 p-0' disabled={reminderRequestSettings.loadingRequest} size={"sm"}>
+            <IoMdAdd className='text-xl' />Adicionar novo lembrete
+          </Button>
           <Divider />
         </div>
         <div className="flex flex-col gap-4 mt-4">
           <div className="flex flex-col gap-0.5 text-secondary">
-            <h2>Meus lembretes</h2>            
+            <h2>Meus lembretes</h2>
           </div>
           {handleContent()}
         </div>

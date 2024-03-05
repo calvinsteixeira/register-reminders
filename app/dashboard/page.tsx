@@ -45,7 +45,6 @@ export default function page() {
     open: false,
     onOpenChange() { },
   })
-  const [selectedReminder, setSelectedReminder] = React.useState<IReminder>()
 
   const handleSelectDate: SelectSingleEventHandler = (event, day) => {
     if (day) setSelectedDateFilter(day);
@@ -59,12 +58,6 @@ export default function page() {
       status: result.status,
       loadingRequest: false,
     });
-  }
-
-  async function createReminder(data: IReminder) {
-    const result: AxiosResponse = await reminderService.createReminder(data)
-
-    // TODO: Atualizar o estado conforme o retorno do create
   }
 
   React.useEffect(() => {
@@ -98,6 +91,7 @@ export default function page() {
       return (
         reminderRequestSettings.data.map((reminder, index) => (
           <ReminderCard
+            key={index}
             title={reminder.title}
             subtitle={reminder.subtitle}
             description={reminder.description}

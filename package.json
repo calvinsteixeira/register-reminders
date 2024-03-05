@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:json": "json-server --watch ./api/db.json --port 4000 ",
+    "dev:json": "json-server --watch ./api/db.json --port 4000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

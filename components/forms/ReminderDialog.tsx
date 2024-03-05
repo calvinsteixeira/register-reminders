@@ -9,6 +9,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import reminderService from '@/api/remindersService';
+import { AxiosResponse } from 'axios';
 import DatePicker from '../inputs/DatePicker';
 import { SelectSingleEventHandler } from "react-day-picker";
 
@@ -41,11 +43,19 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
   const [selectedDate, setSelectedDate] = React.useState<Date>(reminderData?.date || new Date)
 
   const formSchema = z.object({
+    id: z.number().optional(),
     title: z.string().min(2, { message: "O título deve ter pelo menos 2 caracteres" }),
-    subtitle: z.string().min(2, { message: "O subtítulo deve ter pelo menos 2 caracteres." }),
-    description: z.string().min(1, { message: "A descrição não pode ser vazia" }).max(80, { message: "A mensagem precisa conter no máximo 80 caracteres" }),
-    date: z.date().min(new Date(new Date()), { message: "Datas passadas são inválidas" })
-  });
+    subtitle: z.string().optional().refine(desc => {
+      if (desc) {
+        return desc.length >= 1 && desc.length <= 80;
+      }
+      return true;
+    }, {
+      message: "A descrição precisa conter entre 1 e 80 caracteres",
+    }),
+    date: z.date().min(new Date('2024-03-04'), { message: "Datas anteriores a hoje são inválidas" }),
+    description: z.string().min(2, { message: "O subtítulo deve ter pelo menos 2 caracteres." }),
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,7 +67,28 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+
+    if (reminderData) {
+      data.id = reminderData.id
+    }
+
+    console.log(data)
+
+    const result: AxiosResponse = await reminderService.createReminder({
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      date: data.date
+    })
+
+    form.reset({
+      title: "",
+      subtitle: "",
+      description: "",
+      date: new Date
+    })
+
     // setSubmitingForm(true)
     // const requestSchema: emailRequestType = {
     //   name: values.userName,
@@ -175,23 +206,23 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
               )}
             />
             <div className='flex flex-row items-center gap-3 justify-start'>
-            <DialogClose asChild>
-              <Button size={'sm'}>Cancelar</Button>
-            </DialogClose>
-            <DialogClose asChild>
-              <Button size={'sm'} disabled={submitingForm ? true : false} className='bg-secondary text-secondary-foreground' type="submit">{submitingForm ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {reminderData ? 'Salvando informações' : 'Criando lembrete'}
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" /> {reminderData ? 'Salvar os dados' : 'Criar lembrete'}
-                </>
-              )}</Button>
-            </DialogClose>
-            </div>            
+              <DialogClose asChild>
+                <Button size={'sm'}>Cancelar</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button size={'sm'} disabled={submitingForm ? true : false} className='bg-secondary text-secondary-foreground' type="submit">{submitingForm ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {reminderData ? 'Salvando informações' : 'Criando lembrete'}
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" /> {reminderData ? 'Salvar os dados' : 'Criar lembrete'}
+                  </>
+                )}</Button>
+              </DialogClose>
+            </div>
           </form>
-        </Form>        
+        </Form>
       </DialogContent>
     </Dialog>
   )

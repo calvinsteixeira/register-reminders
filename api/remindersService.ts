@@ -2,7 +2,7 @@ import axios, {AxiosResponse} from "axios";
 
 
 interface IReminder {
-  id: number,
+  id?: number,
   title: string,
   subtitle?: string,
   description: string,
@@ -23,7 +23,7 @@ const reminderService = {
   },
   createReminder: async(data: IReminder): Promise<AxiosResponse> => {
     try {
-      const result = await axios.post(API_URL + '/reminders', {data})
+      const result = await axios.post(API_URL + '/reminders', data)
       return result
     } catch (error) {
       console.log(error)

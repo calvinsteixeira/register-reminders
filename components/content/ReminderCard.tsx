@@ -21,7 +21,7 @@ import { MdEdit, MdDelete } from "react-icons/md";
 type Props = {
   title: string,
   subtitle?: string,
-  description: string,
+  description?: string,
   tags?: ReactElement,
   primaryAction: () => void
   secondaryAction: () => void

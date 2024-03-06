@@ -9,6 +9,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import reminderService from '@/api/remindersService';
 import { AxiosResponse } from 'axios';
 import DatePicker from '../inputs/DatePicker';
@@ -44,17 +46,25 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
 
   const formSchema = z.object({
     id: z.number().optional(),
-    title: z.string().min(2, { message: "O título deve ter pelo menos 2 caracteres" }),
-    subtitle: z.string().optional().refine(desc => {
-      if (desc) {
-        return desc.length >= 1 && desc.length <= 80;
+    title: z.string().min(1, { message: "Campo obrigatório" }),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    date: z.string().refine(value => {   
+      
+      let selectedDate: Date | String = format(value, 'dd/MM/yyyy', { locale: ptBR }) 
+      let today: Date | String = format(new Date(), 'dd/MM/yyyy', { locale: ptBR })
+    
+
+      console.log(selectedDate)
+      console.log(today)
+
+      if(selectedDate >= today) {
+        return true 
+      } else {
+        return false
       }
-      return true;
-    }, {
-      message: "A descrição precisa conter entre 1 e 80 caracteres",
-    }),
-    date: z.date().min(new Date('2024-03-04'), { message: "Datas anteriores a hoje são inválidas" }),
-    description: z.string().min(2, { message: "O subtítulo deve ter pelo menos 2 caracteres." }),
+      
+    }, "Não selecione datas passadas")
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,7 +73,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
       title: "",
       subtitle: "",
       description: "",
-      date: new Date()
+      date: new Date().toString()
     },
   });
 
@@ -73,20 +83,18 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
       data.id = reminderData.id
     }
 
-    console.log(data)
-
     const result: AxiosResponse = await reminderService.createReminder({
       title: data.title,
       subtitle: data.subtitle,
       description: data.description,
-      date: data.date
+      date: new Date(data.date)
     })
 
     form.reset({
       title: "",
       subtitle: "",
       description: "",
-      date: new Date
+      date: ""
     })
 
     // setSubmitingForm(true)
@@ -184,18 +192,15 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <DatePicker
-                      selected={selectedDate}
-                      onSelect={handleSelectDate}
-                    />
-                    {/* <Input
+                    <Input
+                      type='date'
                       disabled={submitingForm ? true : false}
                       placeholder="informe o subtítulo"
                       className={
                         form.formState.errors.subtitle ? "border-red-500" : ""
                       }
                       {...field}
-                    /> */}
+                    />
                   </FormControl>
                   <FormMessage
                     className={
@@ -209,17 +214,15 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
               <DialogClose asChild>
                 <Button size={'sm'}>Cancelar</Button>
               </DialogClose>
-              <DialogClose asChild>
-                <Button size={'sm'} disabled={submitingForm ? true : false} className='bg-secondary text-secondary-foreground' type="submit">{submitingForm ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {reminderData ? 'Salvando informações' : 'Criando lembrete'}
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" /> {reminderData ? 'Salvar os dados' : 'Criar lembrete'}
-                  </>
-                )}</Button>
-              </DialogClose>
+              <Button size={'sm'} disabled={submitingForm ? true : false} className='bg-secondary text-secondary-foreground' type="submit">{submitingForm ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {reminderData ? 'Salvando informações' : 'Criando lembrete'}
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" /> {reminderData ? 'Salvar os dados' : 'Criar lembrete'}
+                </>
+              )}</Button>
             </div>
           </form>
         </Form>

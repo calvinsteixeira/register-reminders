@@ -5,7 +5,7 @@ interface IReminder {
   id?: number,
   title: string,
   subtitle?: string,
-  description: string,
+  description?: string,
   date: Date
 }
 

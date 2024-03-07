@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { Button } from "@/components/ui/button"
+import React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,17 +11,15 @@ import {
 } from "@/components/ui/form";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import reminderService from '@/api/remindersService';
-import { AxiosResponse } from 'axios';
-import DatePicker from '../inputs/DatePicker';
-import { SelectSingleEventHandler } from "react-day-picker";
+import reminderService from "@/api/remindersService";
+import { AxiosResponse } from "axios";
 
 import { Textarea } from "../ui/textarea";
-import { Loader2, Send, Check } from "lucide-react";
+import { Loader2, FilePlus2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 
 import {
   Dialog,
@@ -29,73 +27,70 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose
-} from "@/components/ui/dialog"
-import { IReminder } from "@/api/remindersService"
-
+  DialogClose,
+} from "@/components/ui/dialog";
+import { IReminder } from "@/api/remindersService";
 
 export interface IReminderDialog {
-  reminderData?: IReminder
-  open: boolean,
-  onOpenChange: (open: boolean) => void
+  reminderData?: IReminder;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export default function ReminderDialog({ reminderData, open, onOpenChange }: IReminderDialog) {
+export default function ReminderDialog({
+  reminderData,
+  open,
+  onOpenChange,
+}: IReminderDialog) {
   const [submitingForm, setSubmitingForm] = React.useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = React.useState<Date>(reminderData?.date || new Date)
+  const [selectedDate, setSelectedDate] = React.useState<Date>(
+    reminderData?.date || new Date()
+  );
 
   const formSchema = z.object({
     id: z.number().optional(),
     title: z.string().min(1, { message: "Campo obrigatório" }),
     subtitle: z.string().optional(),
     description: z.string().optional(),
-    date: z.string().refine(value => {   
-      
-      let selectedDate: Date | String = format(value, 'dd/MM/yyyy', { locale: ptBR }) 
-      let today: Date | String = format(new Date(), 'dd/MM/yyyy', { locale: ptBR })
-    
-
-      console.log(selectedDate)
-      console.log(today)
-
-      if(selectedDate >= today) {
-        return true 
+    date: z.string().refine((value) => {
+      if (!value) {
       } else {
-        return false
+        let selectedDate: Date | String = format(value, "dd/MM/yyyy", {
+          locale: ptBR,
+        });
+        let today: Date | String = format(new Date(), "dd/MM/yyyy", {
+          locale: ptBR,
+        });
+        if (selectedDate >= today) {
+          return true;
+        } else {
+          return false;
+        }
       }
-      
-    }, "Não selecione datas passadas")
-  })
-
+    }, "Selecione uma data válida"),
+  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      subtitle: "",
-      description: "",
-      date: new Date().toString()
+      title: reminderData?.title || "",
+      subtitle: reminderData?.subtitle || "",
+      description: reminderData?.description || "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-
     if (reminderData) {
-      data.id = reminderData.id
+      data.id = reminderData.id;
     }
 
     const result: AxiosResponse = await reminderService.createReminder({
       title: data.title,
       subtitle: data.subtitle,
       description: data.description,
-      date: new Date(data.date)
-    })
+      date: new Date(data.date),
+    });
 
-    form.reset({
-      title: "",
-      subtitle: "",
-      description: "",
-      date: ""
-    })
+    resetForm();
 
     // setSubmitingForm(true)
     // const requestSchema: emailRequestType = {
@@ -105,18 +100,34 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
     // }
   }
 
-  const handleSelectDate: SelectSingleEventHandler = (event, day) => {
-    if (day) setSelectedDate(day);
-  };
+  function resetForm() {
+    form.reset({
+      title: "",
+      subtitle: "",
+      description: "",
+      date: "",
+    });    
+  }  
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        onOpenChange(open);
+        resetForm()
+      }}
+    >
       <DialogContent className="max-w-[90%]">
         <DialogHeader>
-          <DialogTitle className="text-start">{reminderData ? 'Editar lembrete' : 'Criar novo lembrete'}</DialogTitle>
+          <DialogTitle className="text-start">
+            {reminderData ? "Editar lembrete" : "Criar novo lembrete"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:max-w-[45%] lg:max-w-[30%]">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 md:max-w-[45%] lg:max-w-[30%]"
+          >
             <FormField
               control={form.control}
               name="title"
@@ -129,7 +140,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
                       className={
                         form.formState.errors.title ? "border-red-500" : ""
                       }
-                      {...field}
+                      {...{ ...field, value: reminderData?.title }}
                     />
                   </FormControl>
                   <FormMessage
@@ -152,7 +163,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
                       className={
                         form.formState.errors.subtitle ? "border-red-500" : ""
                       }
-                      {...field}
+                      {...{ ...field, value: reminderData?.subtitle }}
                     />
                   </FormControl>
                   <FormMessage
@@ -173,9 +184,11 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
                       disabled={submitingForm ? true : false}
                       placeholder="informe a descrição"
                       className={
-                        form.formState.errors.description ? "border-red-500" : ""
+                        form.formState.errors.description
+                          ? "border-red-500"
+                          : ""
                       }
-                      {...field}
+                      {...{ ...field, value: reminderData?.description }}
                     />
                   </FormControl>
                   <FormMessage
@@ -193,40 +206,53 @@ export default function ReminderDialog({ reminderData, open, onOpenChange }: IRe
                 <FormItem>
                   <FormControl>
                     <Input
-                      type='date'
+                      type="date"
+                      min={new Date().toJSON().slice(0, 10)}
                       disabled={submitingForm ? true : false}
-                      placeholder="informe o subtítulo"
                       className={
                         form.formState.errors.subtitle ? "border-red-500" : ""
                       }
-                      {...field}
+                      {...{
+                        ...field,
+                        value: format(
+                          reminderData?.date || new Date(),
+                          "yyyy-MM-dd"
+                        ),
+                      }}
                     />
                   </FormControl>
                   <FormMessage
-                    className={
-                      form.formState.errors.date ? "text-red-500" : ""
-                    }
+                    className={form.formState.errors.date ? "text-red-500" : ""}
                   />
                 </FormItem>
               )}
             />
-            <div className='flex flex-row items-center gap-3 justify-start'>
+            <div className="flex flex-row items-center gap-3 justify-start">
               <DialogClose asChild>
-                <Button size={'sm'}>Cancelar</Button>
+                <Button size={"sm"}>Cancelar</Button>
               </DialogClose>
-              <Button size={'sm'} disabled={submitingForm ? true : false} className='bg-secondary text-secondary-foreground' type="submit">{submitingForm ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {reminderData ? 'Salvando informações' : 'Criando lembrete'}
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" /> {reminderData ? 'Salvar os dados' : 'Criar lembrete'}
-                </>
-              )}</Button>
+              <Button
+                size={"sm"}
+                disabled={submitingForm ? true : false}
+                className="bg-secondary text-secondary-foreground"
+                type="submit"
+              >
+                {submitingForm ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                    {reminderData ? "Salvando informações" : "Criando lembrete"}
+                  </>
+                ) : (
+                  <>
+                    <FilePlus2 className="mr-2 h-4 w-4" />{" "}
+                    {reminderData ? "Salvar os dados" : "Criar lembrete"}
+                  </>
+                )}
+              </Button>
             </div>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -106,16 +106,15 @@ export default function ReminderDialog({
       subtitle: "",
       description: "",
       date: "",
-    });    
-  }  
+    });
+  }
+
+  React.useEffect(() => { resetForm() }, [open])
 
   return (
     <Dialog
       open={open}
-      onOpenChange={(open) => {
-        onOpenChange(open);
-        resetForm()
-      }}
+      onOpenChange={onOpenChange}
     >
       <DialogContent className="max-w-[90%]">
         <DialogHeader>
@@ -135,6 +134,7 @@ export default function ReminderDialog({
                 <FormItem>
                   <FormControl>
                     <Input
+                      autoFocus={true}
                       disabled={submitingForm ? true : false}
                       placeholder="informe o título"
                       className={

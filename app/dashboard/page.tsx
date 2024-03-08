@@ -179,8 +179,8 @@ export default function page() {
           </div>
           <Button
             onClick={() => {
-              setReminderDialogSettings((prevStates) => ({
-                ...prevStates,
+              setReminderDialogSettings(() => ({
+                onOpenChange(open) {},
                 open: !reminderDialogSettings.open,
               }));
             }}

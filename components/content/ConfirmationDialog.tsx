@@ -58,7 +58,16 @@ export default function ConfirmationDialog({
           description: 'O lembrete foi removido com sucesso!'
         })
 
-        setTimeout(() => { onReminderDeleted() }, 1000)        
+        setTimeout(() => {
+          setAlertSettings({
+            visible: false,
+            type: 'success',
+            title: '',
+            description: ''
+          })
+        }, 3000)
+
+        onReminderDeleted()
       } else {
         setLoaderOpen(false)
         setAlertSettings({
@@ -68,7 +77,16 @@ export default function ConfirmationDialog({
           description: 'Não foi possível remover o lembrete, tente novamente.'
         })
 
-        setTimeout(() => { onReminderDeleted() }, 300)
+        setTimeout(() => {
+          setAlertSettings({
+            visible: false,
+            type: 'success',
+            title: '',
+            description: ''
+          })
+        }, 1500)
+
+        onReminderDeleted()
       }
     }, 4000)
   }

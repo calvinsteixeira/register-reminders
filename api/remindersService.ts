@@ -2,7 +2,7 @@ import axios, {AxiosResponse} from "axios";
 
 
 interface IReminder {
-  id?: number,
+  id?: string,
   title: string,
   subtitle?: string,
   description?: string,
@@ -29,6 +29,16 @@ const reminderService = {
       console.log(error)
       throw error
     }
+  },
+  deleteReminder: async(reminderId: string): Promise<AxiosResponse> => {
+    try {
+      const result = await axios.delete(API_URL + `/reminders/${reminderId}`)
+      return result
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+    
   }
 }
 

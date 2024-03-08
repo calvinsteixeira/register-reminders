@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select"
 import { MdEdit, MdDelete } from "react-icons/md";
 type Props = {
+  reminderId?: string,
   title: string,
   subtitle?: string,
   description?: string,
@@ -27,7 +28,7 @@ type Props = {
   secondaryAction: () => void
 }
 
-export default function ReminderCard({ title, subtitle, description, tags, primaryAction, secondaryAction }: Props) {
+export default function ReminderCard({ reminderId, title, subtitle, description, tags, primaryAction, secondaryAction }: Props) {
   return (
     <Card className="max-w-[100%] bg-card text-card-foreground shadow-xl border">
       <CardHeader>

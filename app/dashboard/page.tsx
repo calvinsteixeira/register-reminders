@@ -40,35 +40,37 @@ export default function page() {
   const [deleteDialogSettings, setDeleteDialogSettings] =
     React.useState<IDialog>({
       title: "",
+      reminderId: "",
       description: "",
       open: false,
-      onOpenChange() {},
+      onOpenChange() { },
+      onReminderDeleted: getAllReminders
     });
   const [reminderDialogSettings, setReminderDialogSettings] =
     React.useState<IReminderDialog>({
       open: false,
-      onOpenChange() {},
+      onOpenChange() { },
     });
 
-  async function getAllReminders() {
-    const result: AxiosResponse = await reminderService.getAllReminders();
-
-    setReminderRequestSettings({
-      data: result.data,
-      status: result.status,
-      loadingRequest: false,
-    });
-  }
-
-  React.useEffect(() => {
+  function getAllReminders() {
     setReminderRequestSettings((prevState) => ({
       ...prevState,
       loadingRequest: true,
     }));
 
-    setTimeout(() => {
-      getAllReminders();
-    }, 2000);
+    setTimeout(async () => {
+      const result: AxiosResponse = await reminderService.getAllReminders();
+
+      setReminderRequestSettings({
+        data: result.data,
+        status: result.status,
+        loadingRequest: false,
+      });
+    }, 2000)
+  }
+
+  React.useEffect(() => {
+    getAllReminders();
   }, []);
 
   function handleContent(): React.ReactNode {
@@ -98,6 +100,7 @@ export default function page() {
           title={reminder.title}
           subtitle={reminder.subtitle}
           description={reminder.description}
+          reminderId={reminder.id}
           primaryAction={() => {
             setReminderDialogSettings((prevStates) => ({
               ...prevStates,
@@ -106,11 +109,11 @@ export default function page() {
             }));
           }}
           secondaryAction={() => {
-            setDeleteDialogSettings((prevState) => ({
-              ...prevState,
+            setDeleteDialogSettings((prevStates) => ({
+              ...prevStates,
+              reminderId: reminder.id,
               title: "Confirmar exclusão",
-              description:
-                "Essa ação não poderá ser revertida, deseja continuar?",
+              description: "Essa ação não poderá ser revertida, deseja continuar?",
               open: true,
             }));
           }}
@@ -120,7 +123,7 @@ export default function page() {
   }
 
   return (
-    <main className="w-screen h-screen background">
+    <div className="w-screen h-screen background">
       <ConfirmationDialog
         open={deleteDialogSettings.open}
         onOpenChange={() => {
@@ -129,6 +132,10 @@ export default function page() {
             open: !deleteDialogSettings.open,
           }));
         }}
+        onReminderDeleted={() => {
+          getAllReminders()
+        }}
+        reminderId={deleteDialogSettings.reminderId}
         title={deleteDialogSettings.title}
         description={deleteDialogSettings.description}
       />
@@ -142,65 +149,68 @@ export default function page() {
           }));
         }}
       />
-      <h1 className="text-lg font-bold text-secondary mt-12">
-        Register Reminder
-      </h1>
-      <div className="w-full h-full mt-16 flex flex-col">
-        <div className="space-y-4">
-          <span className="text-sm text-secondary">
-            Selecione uma data para filtrar
-          </span>
-          <div className="flex gap-2">
-            <Input
-              type="date"
-              className="max-w-[12rem]"
-              onChange={(e) => {
-                setSelectedDateFilter(e.target.value)
-              }}
-              disabled={reminderRequestSettings.loadingRequest ? true : false}
-              value={selectedDateFilter}
-            />
-            {/* <DatePicker
+      <main>
+        <h1 className="text-lg font-bold text-secondary mt-12">
+          Register Reminder
+        </h1>
+        <div className="w-full h-full mt-16 flex flex-col">
+          <div className="space-y-4">
+            <span className="text-sm text-secondary">
+              Selecione uma data para filtrar
+            </span>
+            <div className="flex gap-2">
+              <Input
+                type="date"
+                className="max-w-[12rem]"
+                onChange={(e) => {
+                  setSelectedDateFilter(e.target.value)
+                }}
+                disabled={reminderRequestSettings.loadingRequest ? true : false}
+                value={selectedDateFilter}
+              />
+              {/* <DatePicker
               selected={selectedDateFilter}
               onSelect={handleSelectDate}
               disabled={reminderRequestSettings.loadingRequest}
             /> */}
+              <Button
+                disabled={reminderRequestSettings.loadingRequest}
+                className="bg-secondary"
+                size={"icon"}
+              >
+                {reminderRequestSettings.loadingRequest ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FaSearch />
+                )}
+              </Button>
+            </div>
             <Button
+              onClick={() => {
+                setReminderDialogSettings(() => ({
+                  onOpenChange(open) { },
+                  open: !reminderDialogSettings.open,
+                }));
+              }}
+              variant={"ghost"}
+              className="text-secondary gap-2 p-0"
               disabled={reminderRequestSettings.loadingRequest}
-              className="bg-secondary"
-              size={"icon"}
+              size={"sm"}
             >
-              {reminderRequestSettings.loadingRequest ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <FaSearch />
-              )}
+              <IoMdAdd className="text-xl" />
+              Adicionar novo lembrete
             </Button>
+            <Divider />
           </div>
-          <Button
-            onClick={() => {
-              setReminderDialogSettings(() => ({
-                onOpenChange(open) {},
-                open: !reminderDialogSettings.open,
-              }));
-            }}
-            variant={"ghost"}
-            className="text-secondary gap-2 p-0"
-            disabled={reminderRequestSettings.loadingRequest}
-            size={"sm"}
-          >
-            <IoMdAdd className="text-xl" />
-            Adicionar novo lembrete
-          </Button>
-          <Divider />
-        </div>
-        <div className="flex flex-col gap-4 mt-4">
-          <div className="flex flex-col gap-0.5 text-secondary">
-            <h2>Meus lembretes</h2>
+          <div className="flex flex-col gap-4 mt-4">
+            <div className="flex flex-col gap-0.5 text-secondary">
+              <h2>Meus lembretes</h2>
+            </div>
+            {handleContent()}
           </div>
-          {handleContent()}
         </div>
-      </div>
-    </main>
+      </main>
+
+    </div>
   );
 }

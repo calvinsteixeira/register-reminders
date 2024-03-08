@@ -48,7 +48,7 @@ export default function ReminderDialog({
   );
 
   const formSchema = z.object({
-    id: z.number().optional(),
+    id: z.string().optional(),
     title: z.string().min(1, { message: "Campo obrigatório" }),
     subtitle: z.string().optional(),
     description: z.string().optional(),

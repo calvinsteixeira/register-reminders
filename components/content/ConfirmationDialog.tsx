@@ -40,7 +40,7 @@ export default function ConfirmationDialog({
     description: ''
   })
 
-  const [loaderOpen, setLoaderOpen] = React.useState<boolean>(true)
+  const [loaderOpen, setLoaderOpen] = React.useState<boolean>(false)
 
   function deleteReminder(id: string) {
     setLoaderOpen(true)

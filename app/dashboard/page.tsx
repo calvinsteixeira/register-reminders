@@ -49,7 +49,8 @@ export default function page() {
   const [reminderDialogSettings, setReminderDialogSettings] =
     React.useState<IReminderDialog>({
       open: false,
-      onOpenChange() { },
+      onOpenChange() {},
+      onFormSubmited: getAllReminders
     });
 
   function getAllReminders() {
@@ -148,6 +149,9 @@ export default function page() {
             open: !reminderDialogSettings.open,
           }));
         }}
+        onFormSubmited={() => {
+          getAllReminders()
+        }}
       />
       <main>
         <h1 className="text-lg font-bold text-secondary mt-12">
@@ -187,8 +191,9 @@ export default function page() {
             </div>
             <Button
               onClick={() => {
-                setReminderDialogSettings(() => ({
-                  onOpenChange(open) { },
+                setReminderDialogSettings((prevStates) => ({
+                  ...prevStates,
+                  onOpenChange(open) {},
                   open: !reminderDialogSettings.open,
                 }));
               }}

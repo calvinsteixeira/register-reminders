@@ -39,7 +39,6 @@ export default function ConfirmationDialog({
     title: '',
     description: ''
   })
-
   const [loaderOpen, setLoaderOpen] = React.useState<boolean>(false)
 
   function deleteReminder(id: string) {
@@ -47,14 +46,14 @@ export default function ConfirmationDialog({
 
     setTimeout(async () => {
 
-      const result = await reminderService.deleteReminder(id)
+      const result = await reminderService.deleteReminder(id)      
 
       if (result.status == 200) {
         setLoaderOpen(false)
         setAlertSettings({
           visible: true,
           type: 'success',
-          title: 'Lembrete removido',
+          title: 'Sucesso!',
           description: 'O lembrete foi removido com sucesso!'
         })
 
@@ -84,7 +83,7 @@ export default function ConfirmationDialog({
             title: '',
             description: ''
           })
-        }, 1500)
+        }, 3000)
 
         onReminderDeleted()
       }

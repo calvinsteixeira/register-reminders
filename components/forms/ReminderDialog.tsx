@@ -81,8 +81,6 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
     },
   });
 
-
-
   function onSubmit(data: z.infer<typeof formSchema>) {
     onOpenChange(false);
     setLoaderOpen(true)
@@ -136,11 +134,8 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
 
         onFormSubmited()
       }
-
       resetForm();
     }, 4000)
-
-
   }
 
   function resetForm() {
@@ -157,7 +152,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
   return (
     <>
       <LoaderScreen
-        show={loaderOpen}
+        show={true}
         label={`${reminderData ? 'Alterando' : 'Criando'} lembrete`}
       />
       <AlertContainer

@@ -9,15 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+
 import { MdEdit, MdDelete } from "react-icons/md";
+
 type Props = {
   reminderId?: string,
   title: string,
@@ -29,6 +23,7 @@ type Props = {
 }
 
 export default function ReminderCard({ reminderId, title, subtitle, description, tags, primaryAction, secondaryAction }: Props) {
+
   return (
     <Card className="max-w-[100%] bg-card text-card-foreground shadow-xl border">
       <CardHeader>

@@ -125,6 +125,20 @@ export default function page() {
 
   return (
     <div className="w-screen h-screen background">
+      
+      <ReminderDialog
+        reminderData={reminderDialogSettings.reminderData}
+        open={reminderDialogSettings.open}
+        onOpenChange={() => {
+          setReminderDialogSettings((prevState) => ({
+            ...prevState,
+            open: !reminderDialogSettings.open,
+          }));
+        }}
+        onFormSubmited={() => {
+          getAllReminders()
+        }}
+      />
       <ConfirmationDialog
         open={deleteDialogSettings.open}
         onOpenChange={() => {
@@ -139,19 +153,6 @@ export default function page() {
         reminderId={deleteDialogSettings.reminderId}
         title={deleteDialogSettings.title}
         description={deleteDialogSettings.description}
-      />
-      <ReminderDialog
-        reminderData={reminderDialogSettings.reminderData}
-        open={reminderDialogSettings.open}
-        onOpenChange={() => {
-          setReminderDialogSettings((prevState) => ({
-            ...prevState,
-            open: !reminderDialogSettings.open,
-          }));
-        }}
-        onFormSubmited={() => {
-          getAllReminders()
-        }}
       />
       <main>
         <h1 className="text-lg font-bold text-secondary mt-12">

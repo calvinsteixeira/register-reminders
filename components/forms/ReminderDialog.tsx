@@ -152,7 +152,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
   return (
     <>
       <LoaderScreen
-        show={open}
+        show={loaderOpen}
         label={`${reminderData ? 'Alterando' : 'Criando'} lembrete`}
       />
       <AlertContainer

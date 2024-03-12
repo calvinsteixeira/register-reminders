@@ -154,8 +154,8 @@ export default function page() {
         title={deleteDialogSettings.title}
         description={deleteDialogSettings.description}
       />
-      <main>
-        <h1 className="text-lg font-bold text-secondary mt-12">
+      <main className="pb-10">
+        <h1 className="text-lg font-bold text-secondary mt-6">
           Register Reminder
         </h1>
         <div className="w-full h-full mt-16 flex flex-col">
@@ -216,7 +216,6 @@ export default function page() {
           </div>
         </div>
       </main>
-
     </div>
   );
 }

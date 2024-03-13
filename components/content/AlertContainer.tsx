@@ -23,8 +23,8 @@ export default function AlertContainer({
         visible ? "fixed" : "hidden"
       } ${alertTypeStyle} border-transparent rounded right-3 top-3 max-w-[80%] shadow-lg`}
     >
-      <AlertTitle>{title}</AlertTitle>
-      <AlertDescription className="mt-2">{description}</AlertDescription>
+      <AlertTitle className='text-sm'>{title}</AlertTitle>
+      <AlertDescription className="mt-2 text-sm">{description}</AlertDescription>
     </Alert>
   );
 }

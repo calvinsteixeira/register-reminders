@@ -34,7 +34,7 @@ import { IReminder } from "@/api/remindersService";
 import { AlertProps } from "../content/AlertContainer";
 
 export interface IReminderDialog {
-  reminderData?: IReminder;
+  reminderData?: IReminder | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onFormSubmited: () => void

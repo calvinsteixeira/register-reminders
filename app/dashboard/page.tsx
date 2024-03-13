@@ -47,7 +47,7 @@ export default function page() {
       onReminderDeleted: getAllReminders
     });
   const [reminderDialogSettings, setReminderDialogSettings] =
-    React.useState<IReminderDialog>({
+    React.useState<IReminderDialog>({      
       open: false,
       onOpenChange() {},
       onFormSubmited: getAllReminders
@@ -192,9 +192,9 @@ export default function page() {
             </div>
             <Button
               onClick={() => {
-                setReminderDialogSettings((prevStates) => ({
+                setReminderDialogSettings((prevStates) => ({ 
                   ...prevStates,
-                  onOpenChange(open) {},
+                  reminderData: null,
                   open: !reminderDialogSettings.open,
                 }));
               }}

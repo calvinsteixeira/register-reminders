@@ -9,7 +9,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import reminderService from "@/api/remindersService";
 import { AxiosResponse } from "axios";
@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { AlertContainer, LoaderScreen } from "../"
+import { AlertContainer, LoaderScreen } from "../";
 
 import {
   Dialog,
@@ -37,18 +37,23 @@ export interface IReminderDialog {
   reminderData?: IReminder | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onFormSubmited: () => void
+  onFormSubmited: () => void;
 }
 
-export default function ReminderDialog({ reminderData, open, onOpenChange, onFormSubmited }: IReminderDialog) {
+export default function ReminderDialog({
+  reminderData,
+  open,
+  onOpenChange,
+  onFormSubmited,
+}: IReminderDialog) {
   const [alertSettings, setAlertSettings] = React.useState<AlertProps>({
     visible: false,
-    type: 'success',
-    title: '',
-    description: ''
-  })
+    type: "success",
+    title: "",
+    description: "",
+  });
 
-  const [loaderOpen, setLoaderOpen] = React.useState<boolean>(false)
+  const [loaderOpen, setLoaderOpen] = React.useState<boolean>(false);
 
   const formSchema = z.object({
     id: z.string().optional(),
@@ -78,12 +83,20 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
       title: reminderData?.title || "",
       subtitle: reminderData?.subtitle || "",
       description: reminderData?.description || "",
+      date: format(new Date(), "yyyy-MM-dd"),
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
+    const dateObject = parseISO(data.date);
+
+    data.date = format(dateObject, "dd-MM-yyyy", { locale: ptBR });
+
+    console.log(data);
+    return;
+
     onOpenChange(false);
-    setLoaderOpen(true)
+    setLoaderOpen(true);
 
     setTimeout(async () => {
       const result: AxiosResponse = await reminderService.createReminder({
@@ -95,47 +108,51 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
       });
 
       if (result) {
-        setLoaderOpen(false)
+        setLoaderOpen(false);
         setAlertSettings({
           visible: true,
-          type: 'success',
-          title: 'Sucesso!',
-          description: `O lembrete foi ${reminderData ? "alterado" : "criado"} com sucesso!`
-        })
+          type: "success",
+          title: "Sucesso!",
+          description: `O lembrete foi ${
+            reminderData ? "alterado" : "criado"
+          } com sucesso!`,
+        });
 
         setTimeout(() => {
           setAlertSettings({
             visible: false,
-            type: 'success',
-            title: '',
-            description: ''
-          })
-        }, 3000)
+            type: "success",
+            title: "",
+            description: "",
+          });
+        }, 3000);
 
-        onFormSubmited()
+        onFormSubmited();
       } else {
-        let description = reminderData ? "Não foi possível salvar os dados do lembrete" : "Não foi possível criar o lembrete"
-        setLoaderOpen(false)
+        let description = reminderData
+          ? "Não foi possível salvar os dados do lembrete"
+          : "Não foi possível criar o lembrete";
+        setLoaderOpen(false);
         setAlertSettings({
           visible: true,
-          type: 'destructive',
-          title: 'Erro',
-          description: `${description}, tente novamente`
-        })
+          type: "destructive",
+          title: "Erro",
+          description: `${description}, tente novamente`,
+        });
 
         setTimeout(() => {
           setAlertSettings({
             visible: false,
-            type: 'success',
-            title: '',
-            description: ''
-          })
-        }, 3000)
+            type: "success",
+            title: "",
+            description: "",
+          });
+        }, 3000);
 
-        onFormSubmited()
+        onFormSubmited();
       }
       resetForm();
-    }, 4000)
+    }, 4000);
   }
 
   function resetForm() {
@@ -147,13 +164,15 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
     });
   }
 
-  React.useEffect(() => { resetForm() }, [open])
+  React.useEffect(() => {
+    resetForm();
+  }, [open]);
 
   return (
     <>
       <LoaderScreen
         show={loaderOpen}
-        label={`${reminderData ? 'Alterando' : 'Criando'} lembrete`}
+        label={`${reminderData ? "Alterando" : "Criando"} lembrete`}
       />
       <AlertContainer
         visible={alertSettings.visible}
@@ -161,10 +180,7 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
         title={alertSettings.title}
         type={alertSettings.type}
       />
-      <Dialog
-        open={open}
-        onOpenChange={onOpenChange}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-[90%]">
           <DialogHeader>
             <DialogTitle className="text-start">
@@ -259,15 +275,13 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
                         }
                         {...{
                           ...field,
-                          value: format(
-                            reminderData?.date || new Date(),
-                            "yyyy-MM-dd"
-                          ),
                         }}
                       />
                     </FormControl>
                     <FormMessage
-                      className={form.formState.errors.date ? "text-red-500" : ""}
+                      className={
+                        form.formState.errors.date ? "text-red-500" : ""
+                      }
                     />
                   </FormItem>
                 )}
@@ -292,6 +306,5 @@ export default function ReminderDialog({ reminderData, open, onOpenChange, onFor
         </DialogContent>
       </Dialog>
     </>
-
   );
 }

@@ -99,6 +99,7 @@ export default function page() {
         <ReminderCard
           key={index}
           title={reminder.title}
+          date={reminder.date}
           subtitle={reminder.subtitle}
           description={reminder.description}
           reminderId={reminder.id}

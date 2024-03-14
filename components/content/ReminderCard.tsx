@@ -16,13 +16,14 @@ type Props = {
   reminderId?: string,
   title: string,
   subtitle?: string,
-  description?: string,
+  description: string,
+  date: string,
   tags?: ReactElement,
   primaryAction: () => void
   secondaryAction: () => void
 }
 
-export default function ReminderCard({ reminderId, title, subtitle, description, tags, primaryAction, secondaryAction }: Props) {
+export default function ReminderCard({ reminderId, title, subtitle, description, date, tags, primaryAction, secondaryAction }: Props) {
 
   return (
     <Card className="max-w-[100%] bg-card text-card-foreground shadow-xl border">

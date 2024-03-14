@@ -5,8 +5,8 @@ interface IReminder {
   id?: string,
   title: string,
   subtitle?: string,
-  description?: string,
-  date: Date
+  description: string,
+  date: string
 }
 
 const API_URL = "http://localhost:4000";

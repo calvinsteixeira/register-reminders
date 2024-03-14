@@ -59,7 +59,7 @@ export default function ReminderDialog({
     id: z.string().optional(),
     title: z.string().min(1, { message: "Campo obrigatório" }),
     subtitle: z.string().optional(),
-    description: z.string().optional(),
+    description: z.string(),
     date: z.string().refine((value) => {
       if (!value) {
       } else {
@@ -92,9 +92,6 @@ export default function ReminderDialog({
 
     data.date = format(dateObject, "dd-MM-yyyy", { locale: ptBR });
 
-    console.log(data);
-    return;
-
     onOpenChange(false);
     setLoaderOpen(true);
 
@@ -104,7 +101,7 @@ export default function ReminderDialog({
         title: data.title,
         subtitle: data.subtitle,
         description: data.description,
-        date: new Date(data.date),
+        date: data.date,
       });
 
       if (result) {
